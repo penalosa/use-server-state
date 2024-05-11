@@ -1,0 +1,9 @@
+{
+  "name": "use-server-state",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "dependencies": {
+    "partysocket": "^1.0.1",
+    "react": "^18.3.1"
+  }
+}

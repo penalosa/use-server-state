@@ -1,0 +1,13 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "use-server-state-worker"
+main = "src/index.ts"
+compatibility_date = "2024-05-02"
+account_id = "c1813c2bcbf20b513d80d455cb110774"
+
+[[durable_objects.bindings]]
+name = "STATE_STORE"
+class_name = "StateStore"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["StateStore"]
