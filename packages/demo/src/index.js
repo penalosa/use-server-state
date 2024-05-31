@@ -8,7 +8,7 @@ import { ServerStateContext } from 'use-server-state';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ServerStateContext.Provider value={`wss://use-server-state-worker.s.workers.dev`}>
+    <ServerStateContext.Provider value={`ws://localhost:8787`}>
       <App />
     </ServerStateContext.Provider>
   </React.StrictMode>

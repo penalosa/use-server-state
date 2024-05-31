@@ -1,5 +1,3 @@
-import { WebSocket } from "partysocket";
-import ReconnectingWebSocket from "partysocket/ws";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 /**
@@ -11,7 +9,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 export function useServerState(initialValue, id = "demo-state-store") {
     const endpoint = useContext(ServerStateContext) ?? `wss://use-server-state-worker.s.workers.dev`;
     /**
-     * @type {React.MutableRefObject<ReconnectingWebSocket>}
+     * @type {import("react").MutableRefObject<WebSocket>}
      */
     const socket = useRef(null)
 
@@ -27,17 +25,18 @@ export function useServerState(initialValue, id = "demo-state-store") {
             const { value } = JSON.parse(m.data)
             setVal(value)
         }
+        socket.current.onopen = () => { if (socket.current.readyState === WebSocket.OPEN) socket.current.send(JSON.stringify({ initial: true })) }
 
-        socket.current.send(JSON.stringify({ initial: true }))
     }, [id])
 
     return [val, v => {
         setVal(v)
-        socket.current.send(JSON.stringify({ value: (v) }))
+        if (socket.current.readyState === WebSocket.OPEN)
+            socket.current.send(JSON.stringify({ value: (v) }))
     }]
 }
 
 /**
- * @type {React.Context<string>}
+ * @type {import("react").Context<string>}
  */
 export const ServerStateContext = createContext(null)
