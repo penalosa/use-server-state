@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-
 /**
  * @type {import("react").Context<string>}
  */
-export const ServerStateContext = createContext(null)
+export const ServerStateContext = createContext(null);
 
 /**
  * @template T
@@ -13,31 +12,38 @@ export const ServerStateContext = createContext(null)
  * @returns {[T, (v: T) => void]}
  */
 export function useServerState(initialValue, id = "demo-state-store") {
-    const endpoint = useContext(ServerStateContext) ?? `wss://use-server-state-worker.s.workers.dev`;
+  const endpoint =
+    useContext(ServerStateContext) ??
+    `wss://use-server-state-worker.s.workers.dev`;
+  /**
+   * @type {import("react").MutableRefObject<WebSocket>}
+   */
+  const socket = useRef(null);
+
+  const [val, setVal] = useState(initialValue);
+
+  useEffect(() => {
+    socket.current = new WebSocket(`${endpoint}/${encodeURIComponent(id)}`);
+
     /**
-     * @type {import("react").MutableRefObject<WebSocket>}
+     * @param {MessageEvent<string>} m
      */
-    const socket = useRef(null)
+    socket.current.onmessage = (m) => {
+      const { value } = JSON.parse(m.data);
+      setVal(value);
+    };
+    socket.current.onopen = () => {
+      if (socket.current.readyState === WebSocket.OPEN)
+        socket.current.send(JSON.stringify({ initial: true }));
+    };
+  }, [id]);
 
-    const [val, setVal] = useState(initialValue)
-
-    useEffect(() => {
-        socket.current = new WebSocket(`${endpoint}/${encodeURIComponent(id)}`);
-
-        /**
-         * @param {MessageEvent<string>} m 
-         */
-        socket.current.onmessage = m => {
-            const { value } = JSON.parse(m.data)
-            setVal(value)
-        }
-        socket.current.onopen = () => { if (socket.current.readyState === WebSocket.OPEN) socket.current.send(JSON.stringify({ initial: true })) }
-
-    }, [id])
-
-    return [val, v => {
-        setVal(v)
-        if (socket.current.readyState === WebSocket.OPEN)
-            socket.current.send(JSON.stringify({ value: (v) }))
-    }]
+  return [
+    val,
+    (v) => {
+      setVal(v);
+      if (socket.current.readyState === WebSocket.OPEN)
+        socket.current.send(JSON.stringify({ value: v }));
+    }
+  ];
 }

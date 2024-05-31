@@ -4,7 +4,7 @@ interface Env {
 	STATE_STORE: DurableObjectNamespace<StateStore>;
 }
 
-export class StateStore extends DurableObject {
+export class StateStore extends DurableObject<Env> {
 	fetch() {
 		const webSocketPair = new WebSocketPair();
 		const [client, server] = Object.values(webSocketPair);
@@ -20,10 +20,11 @@ export class StateStore extends DurableObject {
 		const { value, initial } = JSON.parse(message);
 		console.log(value, initial);
 		if (initial) {
-			ws.send(JSON.stringify({ value: await this.ctx.storage.get('store') }));
+			const currentStoredValue = await this.ctx.storage.get<{ value: unknown }>('store');
+			if (currentStoredValue !== undefined) ws.send(JSON.stringify({ value: currentStoredValue.value }));
 			return;
 		} else {
-			await this.ctx.storage.put('store', value);
+			await this.ctx.storage.put('store', { value });
 			for (const w of this.ctx.getWebSockets()) {
 				if (w !== ws) {
 					w.send(JSON.stringify({ value }));
