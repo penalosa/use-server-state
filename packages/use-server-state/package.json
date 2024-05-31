@@ -1,16 +1,20 @@
 {
   "name": "use-server-state",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "src/index.js",
   "scripts": {
     "prepublish": "tsc --project jsconfig.json"
   },
-  "dependencies": {
-    "react": "^18.3.1"
+  "peerDependencies": {
+    "react": "^18.2"
   },
   "devDependencies": {
-    "@types/react": "^18.3.2",
+    "@types/react": "^18.2",
     "typescript": "^5.0.4"
   },
+  "files": [
+    "types",
+    "src"
+  ],
   "types": "types/index.d.ts"
 }

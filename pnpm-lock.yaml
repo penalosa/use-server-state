@@ -42,11 +42,11 @@ importers:
   packages/use-server-state:
     dependencies:
       react:
-        specifier: ^18.3.1
+        specifier: ^18.2
         version: 18.3.1
     devDependencies:
       '@types/react':
-        specifier: ^18.3.2
+        specifier: ^18.2
         version: 18.3.2
       typescript:
         specifier: ^5.0.4
